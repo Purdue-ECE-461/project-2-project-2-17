@@ -14,8 +14,8 @@
 
 # [START gae_python38_app]
 # [START gae_python3_app]
-from flask import Flask, request
-from flask_restful import Resource, Api, abort, reqparse
+from flask import Flask
+from flask_restful import Resource, Api, reqparse
 from google.cloud import firestore
 
 class Package(object):
