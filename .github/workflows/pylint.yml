@@ -20,4 +20,4 @@ jobs:
         pip install pylint
     - name: Analysing the code with pylint
       run: |
-        pylint ls *.py project-1-project-1-16/*.py
+        pylint *.py project-1-project-1-16/*.py
