@@ -43,27 +43,27 @@ api = Api(app)
 
 class PackageList(Resource):
     def get(self):
-        packages_ref = db.collection('Packages')
+        packages_ref = db.collection('packages')
         docs = packages_ref.stream()
         packages = {}
         for doc in docs:
-            packages[doc.id]= doc.to_dict()
+            packages[doc.id]= doc.to_dict()['metadata']
         return packages
 
     def post(self):
         args = parser.parse_args()
         package = Package(metadata=args['metadata'], data=args['data'])
-        db.collection('Packages').document(package.metadata['Name'] + '_' + package.metadata['Version']).set(package.to_dict())
+        db.collection('packages').document(package.metadata['Name'] + '_' + package.metadata['Version']).set(package.to_dict())
         return package.to_dict(), 201
 
     def __repr__(self):
-        return 'Package(medatada={}, data={}, priority={})'.format(self.medadata, self.data)
+        return 'Package(medatada={}, data={})'.format(self.medadata, self.data)
 
 parser = reqparse.RequestParser()
 parser.add_argument('metadata', type=dict)
 parser.add_argument('data', type=dict)
 
-api.add_resource(PackageList, '/Packages')
+api.add_resource(PackageList, '/packages')
 
 @app.route('/')
 def hello():
