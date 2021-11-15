@@ -14,8 +14,8 @@
 
 # [START gae_python38_app]
 # [START gae_python3_app]
-from flask import Flask
-from flask_restful import Resource, Api, reqparse
+from flask import Flask, jsonify
+from flask_restful import Resource, Api, reqparse, request
 from google.cloud import firestore
 
 class Package(object):
@@ -42,19 +42,24 @@ api = Api(app)
 
 
 class PackageList(Resource):
-    def get(self):
+    @app.route("/packages", methods = ['POST'])
+    def getPackages():
+        offset = request.args.get('offset')
+        print("offset: " + offset)
         packages_ref = db.collection('packages')
         docs = packages_ref.stream()
-        packages = {}
+        packages = []
         for doc in docs:
-            packages[doc.id]= doc.to_dict()['metadata']
-        return packages
+            packages.append(doc.to_dict()['metadata'])
 
-    def post(self):
+        return jsonify(packages)
+
+    @app.route("/package", methods = ['POST'])
+    def createPackage():
         args = parser.parse_args()
         package = Package(metadata=args['metadata'], data=args['data'])
         db.collection('packages').document(package.metadata['Name'] + '_' + package.metadata['Version']).set(package.to_dict())
-        return package.to_dict(), 201
+        return package.to_dict()['metadata'], 201
 
     def __repr__(self):
         return 'Package(medatada={}, data={})'.format(self.medadata, self.data)
