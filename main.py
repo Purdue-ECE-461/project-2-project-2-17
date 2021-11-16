@@ -67,8 +67,34 @@ class PackageList(Resource):
         docs = packages_ref.stream()
         for doc in docs:
             if doc['metadata']['ID'] == packageid:
-                return doc.to_dict()
-        return None
+                return doc.to_dict(), 200
+        
+        return jsonify(code=-1, message="An error occurred while retrieving package"), 500
+
+    @app.route("/package/<packageid>", methods = ['PUT'])
+    def updatePackage(packageid):
+        args = parser.parse_args()
+        package = Package(metadata=args['metadata'], data=args['data'])
+        packages_ref = db.collection('packages')
+        docs = packages_ref.stream()
+        for doc in docs:
+            if doc['metadata']['ID'] == packageid:
+                if (doc['metadata']['Name'] == args['metadata']['Name'] and doc['metadata']['Version'] == args['metadata']['Version']):
+                    doc.update({"data": args['data'], "metadata": args['metadata']})
+                    return 200
+
+        return 400
+
+    
+
+        
+
+
+
+
+    
+
+    
 
     
 
