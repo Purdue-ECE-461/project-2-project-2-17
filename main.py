@@ -97,8 +97,8 @@ class PackageList(Resource):
         for doc in docs:
             if doc.to_dict()['metadata']['ID'] == packageid:
                 doc.delete()
-                return 200
-        return 400
+                return '', 200
+        return '', 400
 
     @app.route("/reset", methods = ['DELETE'])
     def resetRegistry():
@@ -106,8 +106,8 @@ class PackageList(Resource):
         docs = packages_ref.stream()
         for doc in docs:
             doc.delete()
-            return 200
-        return 401
+            return '', 200
+        return '', 401
 
     def __repr__(self):
         return 'Package(medatada={}, data={})'.format(self.medadata, self.data)
@@ -116,7 +116,7 @@ parser = reqparse.RequestParser()
 parser.add_argument('metadata', type=dict)
 parser.add_argument('data', type=dict)
 
-api.add_resource(PackageList, '/packages', '/package', '/package/<packageid>')
+api.add_resource(PackageList, '/packages', '/package', '/package/<packageid>', '/reset')
 # api.add_resource(PackageList, '/package')
 # api.add_resource(PackageList, '/package/<packageid>')
 # api.add_resource(PackageList, '/reset')
