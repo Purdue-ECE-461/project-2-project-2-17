@@ -61,6 +61,17 @@ class PackageList(Resource):
         db.collection('packages').document(package.metadata['Name'] + '_' + package.metadata['Version']).set(package.to_dict())
         return package.to_dict()['metadata'], 201
 
+    @app.route("/package/<packageid>", methods = ['GET'])
+    def retrievePackage(packageid):
+        packages_ref = db.collection('packages')
+        docs = packages_ref.stream()
+        for doc in docs:
+            if doc['metadata']['ID'] == packageid:
+                return doc.to_dict()
+        return None
+
+    
+
     def __repr__(self):
         return 'Package(medatada={}, data={})'.format(self.medadata, self.data)
 
@@ -69,6 +80,8 @@ parser.add_argument('metadata', type=dict)
 parser.add_argument('data', type=dict)
 
 api.add_resource(PackageList, '/packages')
+api.add_resource(PackageList, '/package')
+api.add_resource(PackageList, '/package/<packageid>')
 
 @app.route('/')
 def hello():
