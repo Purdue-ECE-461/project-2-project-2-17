@@ -85,6 +85,17 @@ class PackageList(Resource):
 
         return 400
 
+    @app.route("/package/<packageid>", methods = ['DELETE'])
+    def deletePackage(packageid):
+        packages_ref = db.collection('packages')
+        docs = packages_ref.stream()
+        for doc in docs:
+            if doc['metadata']['ID'] == packageid:
+                doc.delete()
+                return 200
+        return 400
+
+
     
 
         
