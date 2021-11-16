@@ -39,8 +39,6 @@ app = Flask(__name__)
 db = firestore.Client()
 api = Api(app)
 
-
-
 class PackageList(Resource):
     @app.route("/packages", methods = ['POST'])
     def getPackages():
@@ -96,16 +94,13 @@ class PackageList(Resource):
         return 400
 
     @app.route("/reset", methods = ['DELETE'])
-    def deletePackage():
+    def resetRegistry():
         packages_ref = db.collection('packages')
         docs = packages_ref.stream()
         for doc in docs:
             doc.delete()
             return 200
         return 401
-
-
-    
 
     def __repr__(self):
         return 'Package(medatada={}, data={})'.format(self.medadata, self.data)
@@ -117,7 +112,7 @@ parser.add_argument('data', type=dict)
 api.add_resource(PackageList, '/packages')
 api.add_resource(PackageList, '/package')
 api.add_resource(PackageList, '/package/<packageid>')
-api.add_resource(PackageList, '/reset')
+# api.add_resource(PackageList, '/reset')
 
 @app.route('/')
 def hello():
