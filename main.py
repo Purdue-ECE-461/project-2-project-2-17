@@ -109,9 +109,9 @@ parser = reqparse.RequestParser()
 parser.add_argument('metadata', type=dict)
 parser.add_argument('data', type=dict)
 
-api.add_resource(PackageList, '/packages')
-api.add_resource(PackageList, '/package')
-api.add_resource(PackageList, '/package/<packageid>')
+api.add_resource(PackageList, '/packages', '/package', '/package/<packageid>', '/reset')
+# api.add_resource(PackageList, '/package')
+# api.add_resource(PackageList, '/package/<packageid>')
 # api.add_resource(PackageList, '/reset')
 
 @app.route('/')
