@@ -17,6 +17,7 @@
 from flask import Flask, jsonify
 from flask_restful import Resource, Api, reqparse, request
 from google.cloud import firestore
+from google.cloud.firestore_v1 import document
 
 class Package(object):
     def __init__(self, metadata, data):
@@ -56,7 +57,8 @@ class PackageList(Resource):
     def createPackage():
         args = parser.parse_args()
         package = Package(metadata=args['metadata'], data=args['data'])
-        db.collection('packages').document(package.metadata['Name'] + '_' + package.metadata['Version']).set(package.to_dict())
+        # db.collection('packages').document(package.metadata['Name'] + '_' + package.metadata['Version']).set(package.to_dict())
+        db.collection('packages').document(package.metadata['ID']).set(package.to_dict())
         return package.to_dict()['metadata'], 201
 
     @app.route("/package/<packageid>", methods = ['GET'])
@@ -64,7 +66,7 @@ class PackageList(Resource):
         packages_ref = db.collection('packages')
         docs = packages_ref.stream()
         for doc in docs:
-            if doc['metadata']['ID'] == packageid:
+            if doc.to_dict()['metadata']['ID'] == packageid:
                 return doc.to_dict(), 200
         
         return jsonify(code=-1, message="An error occurred while retrieving package"), 500
@@ -75,20 +77,25 @@ class PackageList(Resource):
         package = Package(metadata=args['metadata'], data=args['data'])
         packages_ref = db.collection('packages')
         docs = packages_ref.stream()
+        # db.collection('packages').document().update({"data": args['data'], "metadata": args['metadata']})
         for doc in docs:
-            if doc['metadata']['ID'] == packageid:
-                if (doc['metadata']['Name'] == args['metadata']['Name'] and doc['metadata']['Version'] == args['metadata']['Version']):
-                    doc.update({"data": args['data'], "metadata": args['metadata']})
-                    return 200
-
-        return 400
+            if doc.to_dict()['metadata']['ID'] == packageid:
+                if (doc.to_dict()['metadata']['Name'] == args['metadata']['Name'] and doc.to_dict()['metadata']['Version'] != args['metadata']['Version']):
+                    docID = doc.to_dict()['metadata']['ID']
+                    # doc.to_dict()['data'] = args['data']
+                    # doc.to_dict()['metadata'].update(args['metadata'])
+                    print(args['metadata'])
+                    db.collection('packages').document(docID).update({"data": args['data'], "metadata": args['metadata']})
+                    return doc.to_dict(), 200
+        print('MADE IT HERE')
+        return '', 400
 
     @app.route("/package/<packageid>", methods = ['DELETE'])
     def deletePackage(packageid):
         packages_ref = db.collection('packages')
         docs = packages_ref.stream()
         for doc in docs:
-            if doc['metadata']['ID'] == packageid:
+            if doc.to_dict()['metadata']['ID'] == packageid:
                 doc.delete()
                 return 200
         return 400
@@ -109,9 +116,9 @@ parser = reqparse.RequestParser()
 parser.add_argument('metadata', type=dict)
 parser.add_argument('data', type=dict)
 
-api.add_resource(PackageList, '/packages')
-api.add_resource(PackageList, '/package')
-api.add_resource(PackageList, '/package/<packageid>')
+api.add_resource(PackageList, '/packages', '/package', '/package/<packageid>')
+# api.add_resource(PackageList, '/package')
+# api.add_resource(PackageList, '/package/<packageid>')
 # api.add_resource(PackageList, '/reset')
 
 @app.route('/')
