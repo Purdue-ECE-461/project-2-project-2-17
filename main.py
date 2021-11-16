@@ -64,7 +64,7 @@ class PackageList(Resource):
         packages_ref = db.collection('packages')
         docs = packages_ref.stream()
         for doc in docs:
-            if doc['metadata']['ID'] == packageid:
+            if doc.to_dict()['metadata']['ID'] == packageid:
                 return doc.to_dict(), 200
         
         return jsonify(code=-1, message="An error occurred while retrieving package"), 500
@@ -76,8 +76,8 @@ class PackageList(Resource):
         packages_ref = db.collection('packages')
         docs = packages_ref.stream()
         for doc in docs:
-            if doc['metadata']['ID'] == packageid:
-                if (doc['metadata']['Name'] == args['metadata']['Name'] and doc['metadata']['Version'] == args['metadata']['Version']):
+            if doc.to_dict()['metadata']['ID'] == packageid:
+                if (doc.to_dict()['metadata']['Name'] == args['metadata']['Name'] and doc['metadata']['Version'] == args['metadata']['Version']):
                     doc.update({"data": args['data'], "metadata": args['metadata']})
                     return 200
 
@@ -88,7 +88,7 @@ class PackageList(Resource):
         packages_ref = db.collection('packages')
         docs = packages_ref.stream()
         for doc in docs:
-            if doc['metadata']['ID'] == packageid:
+            if doc.to_dict()['metadata']['ID'] == packageid:
                 doc.delete()
                 return 200
         return 400
