@@ -3,3 +3,4 @@ Flask-RESTful
 google-cloud-firestore
 gunicorn
 Werkzeug
+npm
