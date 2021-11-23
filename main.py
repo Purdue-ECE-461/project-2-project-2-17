@@ -14,8 +14,9 @@
 
 # [START gae_python38_app]
 # [START gae_python3_app]
-from flask import Flask, jsonify
+from flask import Flask, jsonify, g
 from flask_restful import Resource, Api, reqparse, request
+from flask_jwt_router import JwtRoutes
 from google.cloud import firestore
 from google.cloud.firestore_v1 import document
 import utilities
@@ -40,6 +41,12 @@ class Package(object):
 app = Flask(__name__)
 db = firestore.Client()
 api = Api(app)
+JwtRoutes(app)
+jwt_routes = JwtRoutes()
+
+class UserModel(db.Model):
+    user_id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String)
 
 class PackageList(Resource):
     # Get all packages on one big page
@@ -128,15 +135,38 @@ class PackageList(Resource):
             doc.delete()
             return '', 200
         return '', 401
+    
+    # Register and Login user
+    @app.route("/auth/user", methods=["POST"])
+    def register():
+        user_data = request.get_json()
+        try:
+            user = UserModel(**user_data)
+            user.create_user()
+            token: str = jwt_routes.register_entity(entity_id=user.id, entity_type="users")
+            return jsonify(message="User successfully created", token=str(token)), 200
+        except:
+            return jsonify(message="Error creating user"), 500
+    
+    @app.route("/auth/user", methods=["GET"])
+    def login():
+        if "users" not in g:
+            return '', 404
+        try:
+            teacher_dumped = UserSchema().dump(g.teachers)
+            return jsonify(data=teacher_dumped, token=jwt_routes.update_entity(entity_id=g.teachers.teacher_id)), 200
+        except ValidationError as _:
+            return '', 404
 
     def __repr__(self):
         return 'Package(medatada={}, data={})'.format(self.medadata, self.data)
+    
 
 parser = reqparse.RequestParser()
 parser.add_argument('metadata', type=dict)
 parser.add_argument('data', type=dict)
 
-api.add_resource(PackageList, '/packages', '/package', '/package/<packageid>', '/reset')
+api.add_resource(PackageList, '/packages', '/package', '/package/<packageid>', '/reset', '/auth/user')
 
 @app.route('/')
 def hello():
