@@ -4,3 +4,4 @@ google-cloud-firestore
 gunicorn
 Werkzeug
 npm
+flask-jwt-router
