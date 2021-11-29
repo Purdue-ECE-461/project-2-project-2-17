@@ -98,16 +98,11 @@ class PackageList(Resource):
                     # doc.to_dict()['metadata'].update(args['metadata'])
                     print(args['metadata'])
                     db.collection('packages').document(docID).update({"data": args['data'], "metadata": args['metadata']})
-<<<<<<< HEAD
                     return '', 200
-        print('MADE IT HERE')
-=======
-                    return doc.to_dict(), 200
                 else:
                     print('No updates to make')
                     return '', 400
         print('Could not find ' + packageid)
->>>>>>> origin/main
         return '', 400
     
     # Request audit
