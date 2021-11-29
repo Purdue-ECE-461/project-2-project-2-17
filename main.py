@@ -125,7 +125,8 @@ class PackageList(Resource):
         docs = packages_ref.stream()
         for doc in docs:
             if doc.to_dict()['metadata']['ID'] == packageid:
-                doc.delete()
+                docID = doc.to_dict()['metadata']['ID']
+                db.collection('packages').document(docID).delete()
                 return '', 200
         return '', 400
 
