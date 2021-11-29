@@ -171,7 +171,7 @@ api.add_resource(PackageList, '/packages', '/package', '/package/<packageid>', '
 @app.route('/')
 def hello():
     """Return a friendly HTTP greeting."""
-    return 'Hello World! I can update automatically now!'
+    return 'Hello World! I can update automatically now! CHANGEEEEEE'
 
 
 
