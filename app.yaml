@@ -13,6 +13,7 @@
 # limitations under the License.
 
 runtime: python39
+max_concurrent_requests: 80
 # runtime_config:
 #   python_version: 3
 # env: flex
