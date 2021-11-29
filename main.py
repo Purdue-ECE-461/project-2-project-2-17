@@ -53,7 +53,7 @@ class PackageList(Resource):
     @app.route("/packages", methods = ['POST'])
     def getPackages():
         offset = request.args.get('offset')
-        print("offset: " + offset)
+        # print("offset: " + offset)
         packages_ref = db.collection('packages')
         docs = packages_ref.stream()
         packages = []
