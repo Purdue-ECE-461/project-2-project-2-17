@@ -136,9 +136,27 @@ class PackageList(Resource):
         packages_ref = db.collection('packages')
         docs = packages_ref.stream()
         for doc in docs:
-            doc.delete()
+            docID = doc.to_dict()['metadata']['ID']
+            db.collection('packages').document(docID).delete()
             return '', 200
         return '', 401
+
+    # Rate package by ID
+    @app.route("/package/<packageid>/rate", methods = ['GET'])
+    def ratePackage(packageid):
+        packages_ref = db.collection('packages')
+        docs = packages_ref.stream()
+        for doc in docs:
+            if doc.to_dict()['metadata']['ID'] == packageid:
+                docID = doc.to_dict()['metadata']['ID']
+                # if no score for one of the metrics:
+                #     return '', 500
+                # else:
+
+                return jsonify(RampUp = 0, Correctness = 0, BusFactor = 0, ResponsiveMaintainer = 0, LicenseScore = 0, GoodPinningPractice = 0), 200
+        print('Could not find ' + packageid)
+        return '', 400
+
     
     # Register and Login user
     # @app.route("/auth/user", methods=["POST"])
@@ -170,7 +188,7 @@ parser = reqparse.RequestParser()
 parser.add_argument('metadata', type=dict)
 parser.add_argument('data', type=dict)
 
-api.add_resource(PackageList, '/packages', '/package', '/package/<packageid>', '/reset',) # '/auth/user')
+api.add_resource(PackageList, '/packages', '/package', '/package/<packageid>', '/reset', '/package/<packageid>/rate') # '/auth/user')
 
 @app.route('/')
 def hello():
