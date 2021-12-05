@@ -20,6 +20,11 @@ from flask_jwt_router import JwtRoutes
 from google.cloud import firestore
 from google.cloud.firestore_v1 import document
 import utilities
+import project1 as p1
+import os
+import sys
+import subprocess
+
 
 class Package(object):
     def __init__(self, metadata, data):
@@ -152,8 +157,9 @@ class PackageList(Resource):
                 # if no score for one of the metrics:
                 #     return '', 500
                 # else:
-
-                return jsonify(RampUp = 0, Correctness = 0, BusFactor = 0, ResponsiveMaintainer = 0, LicenseScore = 0, GoodPinningPractice = 0), 200
+                URL = doc.to_dict()['data']['URL']
+                scores = rate(URL)
+                return jsonify(RampUp = scores[0], Correctness = scores[1], BusFactor = scores[2], ResponsiveMaintainer = scores[3], LicenseScore = scores[4], GoodPinningPractice = scores[5]), 200
         print('Could not find ' + packageid)
         return '', 400
 
@@ -197,10 +203,23 @@ def hello():
 
 
 
+
+def rate(URL): 
+    with open("URL.txt", "w") as f:
+        f.write(URL)
+    scores = p1.Run.scoreRepos("URL.txt")
+    return scores
+
+    # print(scores)
+    
+
+
+
 if __name__ == '__main__':
     # This is used when running locally only. When deploying to Google App
     # Engine, a webserver process such as Gunicorn will serve the app. You
     # can configure startup instructions by adding `entrypoint` to app.yaml.
+    # rate() 
     app.run(host='127.0.0.1', port=8080, debug=True)
 # [END gae_python3_app]
 # [END gae_python38_app]
