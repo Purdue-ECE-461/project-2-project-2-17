@@ -115,13 +115,13 @@ class PackageList(Resource):
     def auditPackage(packageid):
         packages_ref = db.collection('packages')
         docs = packages_ref.stream()
-        for doc in docs:
-            if doc.to_dict()['metadata']['ID'] == packageid:
-                utilities.strToZip(doc.to_dict()['data']['Content'], 'tmp/' + packageid + '.zip')
-                output = utilities.auditPackage('tmp/' + packageid + '.zip')
-                return output[0], 200
-        
-        return jsonify(code=-1, message="An error occurred while retrieving package"), 500
+        try:
+            for doc in docs:
+                if doc.to_dict()['metadata']['ID'] == packageid:
+                    utilities.strToZip(doc.to_dict()['data']['Content'], 'tmp/' + packageid + '.zip')
+                    output = utilities.auditPackage('tmp/' + packageid + '.zip')
+                    return output[0], 200
+        except: return jsonify(code=-1, message="An error occurred while retrieving package"), 500
 
     # Delete package by ID
     @app.route("/package/<packageid>", methods = ['DELETE'])
