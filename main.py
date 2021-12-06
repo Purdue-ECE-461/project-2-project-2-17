@@ -97,7 +97,7 @@ class PackageList(Resource):
         # db.collection('packages').document().update({"data": args['data'], "metadata": args['metadata']})
         for doc in docs:
             if doc.to_dict()['metadata']['ID'] == packageid:
-                if (doc.to_dict()['metadata']['Name'] == args['metadata']['Name'] and doc.to_dict()['metadata']['Version'] == args['metadata']['Version']):
+                if (doc.to_dict()['metadata']['Name'] == args['metadata']['Name'] and doc.to_dict()['metadata']['Version'] != args['metadata']['Version']):
                     docID = doc.to_dict()['metadata']['ID']
                     # doc.to_dict()['data'] = args['data']
                     # doc.to_dict()['metadata'].update(args['metadata'])
