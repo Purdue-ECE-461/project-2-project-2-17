@@ -165,6 +165,23 @@ class PackageList(Resource):
         print('Could not find ' + packageid)
         return '', 400
 
+    # package ingestion
+    @app.route("/package", methods = ['POST'])
+    def ingestPackage():
+        args = parser.parse_args()
+        package = Package(metadata=args['metadata'], data=args['data'])
+        packages_ref = db.collection('packages')
+        docs = packages_ref.stream()
+        for doc in docs:
+            if (doc.to_dict()['metadata']['ID'] == package.metadata['ID'] and doc.to_dict()['metadata']['Name'] == package.metadata['Name'] and doc.to_dict()['metadata']['Version'] == package.metadata['Version']): # package exists already
+                return '', 403        
+        URL = package.data['URL']
+        scores = rate(URL)
+        print(scores)
+        if (all(i >= 0.5 for i in scores)):
+            db.collection('packages').document(package.metadata['ID']).set(package.to_dict())
+            return package.to_dict()['metadata'], 201
+
     
     # Register and Login user
     # @app.route("/auth/user", methods=["POST"])
