@@ -7,3 +7,4 @@ npm
 flask-jwt-router
 pygithub
 python-dotenv
+google-cloud-secret-manager
