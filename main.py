@@ -70,12 +70,20 @@ class PackageList(Resource):
     # Create package
     @app.route("/package", methods = ['POST'])
     def createPackage():
-        args = parser.parse_args()
-        package = Package(metadata=args['metadata'], data=args['data'])
-        # db.collection('packages').document(package.metadata['Name'] + '_' + package.metadata['Version']).set(package.to_dict())
-        if ("Content" in package.to_dict()['data']):
-            db.collection('packages').document(package.metadata['ID']).set(package.to_dict())
-            return package.to_dict()['metadata'], 201
+        try:
+            args = parser.parse_args()
+            package = Package(metadata=args['metadata'], data=args['data'])
+            # db.collection('packages').document(package.metadata['Name'] + '_' + package.metadata['Version']).set(package.to_dict())
+            # Check to see if package already exists
+            packages_ref = db.collection('packages')
+            docs = packages_ref.stream()
+            for doc in docs:
+                if doc.to_dict()['metadata']['ID'] == package.metadata['ID']:
+                    return 'Package already exists', 403
+            if ("Content" in package.to_dict()['data']):
+                db.collection('packages').document(package.metadata['ID']).set(package.to_dict())
+                return package.to_dict()['metadata'], 201
+        except: return 'Malformed request', 400
 
     # Get package by ID
     @app.route("/package/<packageid>", methods = ['GET'])
@@ -109,7 +117,7 @@ class PackageList(Resource):
                     print('No updates to make')
                     return 'No updates to make', 400
         print('Could not find ' + packageid)
-        return '', 400
+        return 'Could not find ' + packageid, 400
     
     # Request audit
     @app.route("/package/<packageid>/audit", methods = ['GET'])
