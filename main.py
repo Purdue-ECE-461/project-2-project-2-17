@@ -207,8 +207,7 @@ def hello():
 
 
 def rate(URL): 
-    os.system("chmod URL.txt +w")
-    with open("URL.txt", "w") as f:
+    with open("/tmp/URL.txt", "w") as f:
         f.write(URL)
     scores = p1.Run.scoreRepos("URL.txt")
     return scores
