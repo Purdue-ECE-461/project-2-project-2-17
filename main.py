@@ -174,7 +174,8 @@ class PackageList(Resource):
         packages_ref = db.collection('packages')
         docs = packages_ref.stream()
         for doc in docs:
-            if (doc.to_dict()['metadata']['ID'] == package.metadata['ID'] and doc.to_dict()['metadata']['Name'] == package.metadata['Name'] and doc.to_dict()['metadata']['Version'] == package.metadata['Version']): # package exists already
+            # if (doc.to_dict()['metadata']['ID'] == package.metadata['ID'] and doc.to_dict()['metadata']['Name'] == package.metadata['Name'] and doc.to_dict()['metadata']['Version'] == package.metadata['Version']): 
+            if (package.to_dict() == doc.to_dict()): # package exists already
                 return '', 403        
         URL = package.data['URL']
         scores = rate(URL)
@@ -182,6 +183,8 @@ class PackageList(Resource):
         if (all(i >= 0.5 for i in scores)):
             db.collection('packages').document(package.metadata['ID']).set(package.to_dict())
             return package.to_dict()['metadata'], 201
+        else:
+            return '', 400
 
     
     # Register and Login user
