@@ -5,6 +5,6 @@ gunicorn
 Werkzeug
 npm
 flask-jwt-router
-pygithub
+PyGithub
 python-dotenv
 google-cloud-secret-manager
