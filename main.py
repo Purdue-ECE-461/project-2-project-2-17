@@ -167,7 +167,7 @@ class PackageList(Resource):
 
     # package ingestion
     @app.route("/package", methods = ['POST'])
-    def createPackage():
+    def ingestPackage():
         args = parser.parse_args()
         package = Package(metadata=args['metadata'], data=args['data'])
         packages_ref = db.collection('packages')
