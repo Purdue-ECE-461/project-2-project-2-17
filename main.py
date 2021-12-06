@@ -209,7 +209,7 @@ def hello():
 def rate(URL): 
     with open("/tmp/URL.txt", "w") as f:
         f.write(URL)
-    scores = p1.Run.scoreRepos("URL.txt")
+    scores = p1.Run.scoreRepos("/tmp/URL.txt")
     return scores
 
     # print(scores)
