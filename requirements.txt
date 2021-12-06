@@ -6,3 +6,4 @@ Werkzeug
 npm
 flask-jwt-router
 pygithub
+python-dotenv
