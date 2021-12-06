@@ -58,12 +58,19 @@ class PackageList(Resource):
     @app.route("/packages", methods = ['POST'])
     def getPackages():
         offset = request.args.get('offset')
+        if offset == None:
+            offset = 1
+        else:
+            offset = int(offset)
         # print("offset: " + offset)
         packages_ref = db.collection('packages')
         docs = packages_ref.stream()
         packages = []
+        counter = 1
         for doc in docs:
-            packages.append(doc.to_dict()['metadata'])
+            if((counter > ((offset - 1) * 10)) and (counter <= (offset * 10))):
+                packages.append(doc.to_dict()['metadata'])
+            counter += 1
 
         return jsonify(packages)
 
