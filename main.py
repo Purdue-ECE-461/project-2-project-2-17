@@ -117,8 +117,8 @@ class PackageList(Resource):
         docs = packages_ref.stream()
         for doc in docs:
             if doc.to_dict()['metadata']['ID'] == packageid:
-                utilities.strToZip(doc.to_dict()['data']['Content'], packageid + '.zip')
-                output = utilities.auditPackage('/tmp/' + packageid + '.zip')
+                utilities.strToZip(doc.to_dict()['data']['Content'], 'tmp/' + packageid + '.zip')
+                output = utilities.auditPackage('tmp/' + packageid + '.zip')
                 return output[0], 200
         
         return jsonify(code=-1, message="An error occurred while retrieving package"), 500
