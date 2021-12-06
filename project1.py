@@ -4,7 +4,7 @@ import os
 from dotenv import load_dotenv
 # from URLData import RepoData
 import datetime
-# from git import Repo
+from git import Repo
 # import unittest
 # from FileParser import FileParser
 import requests
@@ -37,7 +37,7 @@ class APIService:
         client = secretmanager.SecretManagerServiceClient()
 
         # Build the resource name of the secret version.
-        name = f"projects/227853232518/secrets/GitHub_Token/versions/1"
+        name = f"projects/227853232518/secrets/GitHub_Token/versions/2"
 
         # Access the secret version.
         response = client.access_secret_version(request={"name": name})
@@ -85,6 +85,7 @@ class APIService:
                     path += x + "/"
                 if not os.path.exists(path + repoData.urlObj.repo):
                     Repo.clone_from(repoData.urlObj.githubUrl + ".git", path + repoData.urlObj.repo)
+                print("LOOKING FOR PATH: " + repoData.urlObj.githubUrl + ".git", path + repoData.urlObj.repo)
                 listOfReadMes = ["README.md", "ReadMe.md", "readme.md", "Readme.md", "README.markdown", "ReadMe.markdown", "readme.markdown", "Readme.markdown"]
                 for x in listOfReadMes:
                     if (os.path.exists(path + repoData.urlObj.repo + "/" + x) == True):
@@ -161,7 +162,7 @@ class FileParser:
         try:
             for url, actualUrl in zip(self.GitHub_URLS, self.URLs):
                 author, repo = url.split("github.com/",1)[1].split("/",1)
-                self.list_of_repos.append(Repo(author, repo, actualUrl, url))
+                self.list_of_repos.append(RepoInfo(author, repo, actualUrl, url))
         except Exception as e:
             self.logger.logToFile("Author and repo could not be extracted from URL", "A url may not contain \"github.com\" and\or could not be split correctly")
             raise Exception("strip_urls failure in FileParser.py. No author/repo could be pulled from the given URL. Check URLs and try again.", e.args)
@@ -353,7 +354,7 @@ class ScoreLogger:
         
         return self.level
 
-class Repo:
+class RepoInfo:
     def __init__(self, author, repoName, url, githubUrl):
         self.url = url
         self.author = author
