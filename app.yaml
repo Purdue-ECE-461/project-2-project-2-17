@@ -19,7 +19,7 @@ automatic_scaling:
 #   python_version: 3
 # env: flex
 env_variables:
-  GITHUB_TOKEN: "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"
+  GITHUB_TOKEN: "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"
   LOG_FILE: "/tmp/logfile.txt"
   LOG_LEVEL: "2"
   # NODE_ENV: "development"
