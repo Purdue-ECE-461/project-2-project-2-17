@@ -22,12 +22,32 @@ class APIService:
     def __init__(self, urls, logger):
         load_dotenv()
         self.logger = logger
-        self.token = os.getenv("GITHUB_TOKEN")
+        self.token = self.GetToken()
         self.github = self.Connect()
         self.urls = urls
         self.urlDataList = []
         self.CreateData()
         self.GetDataFromApi()
+    
+    def GetToken(self):
+        # Import the Secret Manager client library.
+        from google.cloud import secretmanager
+
+        # Create the Secret Manager client.
+        client = secretmanager.SecretManagerServiceClient()
+
+        # Build the resource name of the secret version.
+        name = f"projects/227853232518/secrets/GitHub_Token/versions/1"
+
+        # Access the secret version.
+        response = client.access_secret_version(request={"name": name})
+
+        # Print the secret payload.
+        #
+        # WARNING: Do not print the secret in a production environment - this
+        # snippet is showing how to access the secret material.
+        # payload = response.payload.data.decode("UTF-8")
+        # print("Plaintext: {}".format(payload))
 
     def Connect(self):
         try:

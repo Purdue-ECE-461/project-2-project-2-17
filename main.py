@@ -111,7 +111,7 @@ class PackageList(Resource):
         return '', 400
     
     # Request audit
-    @app.route("/audit/<packageid>", methods = ['GET'])
+    @app.route("/package/<packageid>/audit", methods = ['GET'])
     def auditPackage(packageid):
         packages_ref = db.collection('packages')
         docs = packages_ref.stream()
@@ -159,7 +159,7 @@ class PackageList(Resource):
                 # else:
                 URL = doc.to_dict()['data']['URL']
                 scores = rate(URL)
-                print(scores)
+                # print(scores)
                 return jsonify(RampUp = scores[1], Correctness = scores[2], BusFactor = scores[3], ResponsiveMaintainer = scores[4], LicenseScore = scores[5], GoodPinningPractice = scores[6]), 200
                 # return '', 200
         print('Could not find ' + packageid)
