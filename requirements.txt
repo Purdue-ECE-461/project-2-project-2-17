@@ -6,5 +6,6 @@ Werkzeug
 npm
 flask-jwt-router
 PyGithub
+GitPython
 python-dotenv
 google-cloud-secret-manager
