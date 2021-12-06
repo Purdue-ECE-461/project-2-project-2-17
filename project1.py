@@ -1,3 +1,4 @@
+from flask.json import jsonify
 import github
 import os
 from dotenv import load_dotenv
@@ -13,6 +14,7 @@ from dotenv.main import load_dotenv
 import sys
 from os.path import exists
 from sys import stdout
+import json
 
 
 
@@ -84,9 +86,10 @@ class APIService:
                 except:
                     repoData.monthsSinceLastChange = 12
                 package = repo.get_contents("package.json").decoded_content.decode("utf-8")
-                # print(type(package))
-                # print(package["scripts"])
-                # repoData.dependencies = package["dependencies"]
+                package = json.loads(package)
+                # print(package)
+                # print(package["dependencies"])
+                repoData.dependencies = package["dependencies"]
                 # print(repoData.dependencies)              
                     
         except Exception as e:
@@ -269,7 +272,7 @@ class ScoreCalculator:
             
             matched = re.match(pattern, version)
             if (bool(matched)):
-                print ("WEEEEEY")
+                # print ("WEEEEEY")
                 return 1
 
 
@@ -475,8 +478,8 @@ class Run:
                 x.urlObj.busFactorScore = calc.busFactorScore(x.repoUsers, x.monthsSinceLastChange)
                 x.urlObj.responsiveMaintainScore = calc.responsivenessScore(x.repoContributors, x.forks)
                 # x.urlObj.goodPinningPracticeScore = calc.goodPinningScore(x.dependencies)
-                dependencies = {1:"1.1.1 - 1.1.7"}
-                x.urlObj.goodPinningPracticeScore = calc.goodPinningScore(dependencies)
+                # dependencies = {1:"1.1.1 - 1.1.7"}
+                x.urlObj.goodPinningPracticeScore = calc.goodPinningScore(x.dependencies)
                 x.urlObj.netScore = calc.netScore(x)
             logger.logToFile("Scores calculated.", "")
 
