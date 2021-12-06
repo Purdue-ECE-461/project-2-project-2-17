@@ -73,8 +73,9 @@ class PackageList(Resource):
         args = parser.parse_args()
         package = Package(metadata=args['metadata'], data=args['data'])
         # db.collection('packages').document(package.metadata['Name'] + '_' + package.metadata['Version']).set(package.to_dict())
-        db.collection('packages').document(package.metadata['ID']).set(package.to_dict())
-        return package.to_dict()['metadata'], 201
+        if ("Content" in package.to_dict()['data']):
+            db.collection('packages').document(package.metadata['ID']).set(package.to_dict())
+            return package.to_dict()['metadata'], 201
 
     # Get package by ID
     @app.route("/package/<packageid>", methods = ['GET'])
