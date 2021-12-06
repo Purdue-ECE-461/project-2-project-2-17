@@ -101,12 +101,12 @@ class PackageList(Resource):
                     docID = doc.to_dict()['metadata']['ID']
                     # doc.to_dict()['data'] = args['data']
                     # doc.to_dict()['metadata'].update(args['metadata'])
-                    print(args['metadata'])
+                    # print(args['metadata'])
                     db.collection('packages').document(docID).update({"data": args['data'], "metadata": args['metadata']})
-                    return '', 200
+                    return args['metadata'], 200
                 else:
                     print('No updates to make')
-                    return '', 400
+                    return 'No updates to make', 400
         print('Could not find ' + packageid)
         return '', 400
     
