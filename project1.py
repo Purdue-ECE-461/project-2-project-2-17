@@ -88,8 +88,8 @@ class APIService:
                 package = repo.get_contents("package.json").decoded_content.decode("utf-8")
                 package = json.loads(package)
                 # print(package)
-                # print(package["dependencies"])
-                repoData.dependencies = package["dependencies"]
+                # print(package["devDependencies"])
+                repoData.dependencies = package["devDependencies"]
                 # print(repoData.dependencies)              
                     
         except Exception as e:
@@ -284,7 +284,10 @@ class ScoreCalculator:
             if (self.pinned(version)):
                 num += 1
 
-        score = num / count
+        if count > 0:
+            score = num / count
+        else:
+            score = 0
         return score
 
     def netScore(self, urlObj0):
@@ -466,45 +469,45 @@ class Run:
         load_dotenv()
         logger = ScoreLogger()
         logger.logToFile("Logger started", "Logger started on line 15 in Run.py")
-        try:
-            fp = FileParser(filepath, logger)
-            api = APIService(fp.list_of_repos, logger)
-            logger.logToFile("Data obtained from API.", "")
-            calc = ScoreCalculator(logger)
-            for x in api.urlDataList:
-                x.urlObj.licenseScore = calc.licenseScore(x.repoLicense)
-                x.urlObj.rampUpScore = calc.rampUpTimeScore(x)
-                x.urlObj.correctScore = calc.correctnessScore(x.stars)
-                x.urlObj.busFactorScore = calc.busFactorScore(x.repoUsers, x.monthsSinceLastChange)
-                x.urlObj.responsiveMaintainScore = calc.responsivenessScore(x.repoContributors, x.forks)
-                # x.urlObj.goodPinningPracticeScore = calc.goodPinningScore(x.dependencies)
-                # dependencies = {1:"1.1.1 - 1.1.7"}
-                x.urlObj.goodPinningPracticeScore = calc.goodPinningScore(x.dependencies)
-                x.urlObj.netScore = calc.netScore(x)
-            logger.logToFile("Scores calculated.", "")
+        # try:
+        fp = FileParser(filepath, logger)
+        api = APIService(fp.list_of_repos, logger)
+        logger.logToFile("Data obtained from API.", "")
+        calc = ScoreCalculator(logger)
+        for x in api.urlDataList:
+            x.urlObj.licenseScore = calc.licenseScore(x.repoLicense)
+            x.urlObj.rampUpScore = calc.rampUpTimeScore(x)
+            x.urlObj.correctScore = calc.correctnessScore(x.stars)
+            x.urlObj.busFactorScore = calc.busFactorScore(x.repoUsers, x.monthsSinceLastChange)
+            x.urlObj.responsiveMaintainScore = calc.responsivenessScore(x.repoContributors, x.forks)
+            # x.urlObj.goodPinningPracticeScore = calc.goodPinningScore(x.dependencies)
+            # dependencies = {1:"1.1.1 - 1.1.7"}
+            x.urlObj.goodPinningPracticeScore = calc.goodPinningScore(x.dependencies)
+            x.urlObj.netScore = calc.netScore(x)
+        logger.logToFile("Scores calculated.", "")
 
-            for i in range(1, len(api.urlDataList)):
-                key = api.urlDataList[i].urlObj.netScore
-                j = i - 1
-                while j >= 0 and key > api.urlDataList[j].urlObj.netScore :
-                        #api.urlDataList[j + 1].urlObj.netScore = api.urlDataList[j].urlObj.netScore
-                        temp = api.urlDataList[j + 1]
-                        api.urlDataList[j + 1] = api.urlDataList[j]
-                        api.urlDataList[j] = temp
-                        j -= 1
-                api.urlDataList[j + 1].urlObj.netScore = key
-                
-            logger.logToFile("Scores sorted.", "")
+        for i in range(1, len(api.urlDataList)):
+            key = api.urlDataList[i].urlObj.netScore
+            j = i - 1
+            while j >= 0 and key > api.urlDataList[j].urlObj.netScore :
+                    #api.urlDataList[j + 1].urlObj.netScore = api.urlDataList[j].urlObj.netScore
+                    temp = api.urlDataList[j + 1]
+                    api.urlDataList[j + 1] = api.urlDataList[j]
+                    api.urlDataList[j] = temp
+                    j -= 1
+            api.urlDataList[j + 1].urlObj.netScore = key
+            
+        logger.logToFile("Scores sorted.", "")
 
-            for x in api.urlDataList:
-                output = x.urlObj.printScores()
-                return output
+        for x in api.urlDataList:
+            output = x.urlObj.printScores()
+            return output
 
-        except Exception as e:
-            logger.logToFile("An exception occurred. The exception was " + type(e).__name__, "")
-            print("We detected an error of type " + type(e).__name__ + ". See below for more information. Please try to fix the error and run again.", file=sys.stderr)
-            print(e.args[0], file=sys.stderr)
-            exit(1)
+        # except Exception as e:
+        #     logger.logToFile("An exception occurred. The exception was " + type(e).__name__, "")
+        #     print("We detected an error of type " + type(e).__name__ + ". See below for more information. Please try to fix the error and run again.", file=sys.stderr)
+        #     print(e.args[0], file=sys.stderr)
+        #     exit(1)
     
 
 def main():
@@ -536,7 +539,7 @@ def main():
 
 if __name__ == '__main__':
     output = main()
-    print(str(output))
+    # print(str(output))
 
 # output = main()
 # print(str(output))

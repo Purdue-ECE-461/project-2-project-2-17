@@ -160,7 +160,7 @@ class PackageList(Resource):
                 URL = doc.to_dict()['data']['URL']
                 scores = rate(URL)
                 print(scores)
-                return jsonify(RampUp = scores[0], Correctness = scores[1], BusFactor = scores[2], ResponsiveMaintainer = scores[3], LicenseScore = scores[4], GoodPinningPractice = scores[5]), 200
+                return jsonify(RampUp = scores[1], Correctness = scores[2], BusFactor = scores[3], ResponsiveMaintainer = scores[4], LicenseScore = scores[5], GoodPinningPractice = scores[6]), 200
                 # return '', 200
         print('Could not find ' + packageid)
         return '', 400
