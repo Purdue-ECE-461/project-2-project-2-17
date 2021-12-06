@@ -18,7 +18,10 @@ automatic_scaling:
 # runtime_config:
 #   python_version: 3
 # env: flex
-# env_variables:
-#   NODE_ENV: "development"
+env_variables:
+  GITHUB_TOKEN: "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"
+  LOG_FILE: "project-1-project-1-16/logfile.txt"
+  LOG_LEVEL: "2"
+  # NODE_ENV: "development"
 
 # entrypoint: gunicorn -b :$PORT app:app  --timeout 90
