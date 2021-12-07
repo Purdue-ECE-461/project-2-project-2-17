@@ -39,7 +39,7 @@ class Package(object):
         return package
 
     def __repr__(self):
-        return 'Package(medatada={}, data={}, priority={})'.format(self.medadata, self.data)
+        return 'Package(metadata={}, data={}, priority={})'.format(self.metadata, self.data)
 
 # If `entrypoint` is not defined in app.yaml, App Engine will look for an app
 # called `app` in `main.py`.
@@ -228,22 +228,20 @@ class PackageList(Resource):
     # package ingestion
     @app.route("/package", methods = ['POST'])
     def ingestPackage():
-        args = parser.parse_args()
-        package = Package(metadata=args['metadata'], data=args['data'])
-        packages_ref = db.collection('packages')
-        docs = packages_ref.stream()
-        for doc in docs:
-            # if (doc.to_dict()['metadata']['ID'] == package.metadata['ID'] and doc.to_dict()['metadata']['Name'] == package.metadata['Name'] and doc.to_dict()['metadata']['Version'] == package.metadata['Version']): 
-            if (package.to_dict() == doc.to_dict()): # package exists already
-                return '', 403        
-        URL = package.data['URL']
-        scores = rate(URL)
-        print(scores)
-        if (all(i >= 0.5 for i in scores)):
-            db.collection('packages').document(package.metadata['ID']).set(package.to_dict())
-            return package.to_dict()['metadata'], 201
-        else:
-            return '', 400
+        try:
+            args = parser.parse_args()
+            package = Package(metadata=args['metadata'], data=args['data'])
+            packages_ref = db.collection('packages')
+            docs = packages_ref.stream()
+            for doc in docs:
+                # if (doc.to_dict()['metadata']['ID'] == package.metadata['ID'] and doc.to_dict()['metadata']['Name'] == package.metadata['Name'] and doc.to_dict()['metadata']['Version'] == package.metadata['Version']): 
+                if doc.to_dict()['metadata']['ID'] == package.metadata['ID']:
+                    return 'Package already exists', 403      
+            URL = package.data['URL']
+            if isIngestible(URL):
+                db.collection('packages').document(package.metadata['ID']).set(package.to_dict())
+                return package.to_dict()['metadata'], 201
+        except: return 'Malformed request', 400
 
     
     # Register and Login user
@@ -284,6 +282,13 @@ def hello():
     return 'Hello World! I can update automatically now! CHANGEEEEEE'
 
 
+def isIngestible(URL):
+    scores = rate(URL)
+    print(scores)
+    if (all(i >= 0.5 for i in scores)):
+        return True
+    else:
+        return False
 
 
 def rate(URL): 
