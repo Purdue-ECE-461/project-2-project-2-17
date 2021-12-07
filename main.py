@@ -162,12 +162,16 @@ class PackageList(Resource):
         try:
             packages_ref = db.collection('packages')
             docs = packages_ref.stream()
+            foundFlag = 0
             for doc in docs:
                 if doc.to_dict()['metadata']['Name'] == packageName:
+                    foundFlag = 1
                     docID = doc.to_dict()['metadata']['ID']
                     db.collection('packages').document(docID).delete()
-                    return '', 200
-            return '', 400
+            if foundFlag:
+                return '', 200
+            else:
+                return '', 400
         except: return '', 400
 
     # Reset registry
