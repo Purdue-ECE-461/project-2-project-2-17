@@ -106,6 +106,23 @@ class PackageList(Resource):
                     return doc.to_dict(), 200
             return jsonify(code=0, message="Package with ID '" + packageid + "' not found"), 'default'
         except: return jsonify(code=0, message="An error occurred while retrieving package"), 'default'
+    
+    # Get package by name
+    @app.route("/package/byName/<name>", methods = ['GET'])
+    def retrievePackageByName(name):
+        try:
+            packages_ref = db.collection('packages')
+            docs = packages_ref.stream()
+            packages = []
+            foundFlag = 0
+            for doc in docs:
+                if doc.to_dict()['metadata']['Name'] == name:
+                    foundFlag = 1
+                    packages.append(doc.to_dict()['metadata'])
+            if foundFlag:
+                return jsonify(packages), 200
+            return jsonify(code=0, message="Package with name '" + name + "' not found"), 'default'
+        except: return jsonify(code=0, message="An error occurred while retrieving package"), 'default'
 
     # Update package
     @app.route("/package/<packageid>", methods = ['PUT'])
