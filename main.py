@@ -57,22 +57,24 @@ class PackageList(Resource):
     # Get all packages on one big page
     @app.route("/packages", methods = ['POST'])
     def getPackages():
-        offset = request.args.get('offset')
-        if offset == None:
-            offset = 1
-        else:
-            offset = int(offset)
-        # print("offset: " + offset)
-        packages_ref = db.collection('packages')
-        docs = packages_ref.stream()
-        packages = []
-        counter = 1
-        for doc in docs:
-            if((counter > ((offset - 1) * 10)) and (counter <= (offset * 10))):
-                packages.append(doc.to_dict()['metadata'])
-            counter += 1
+        try:
+            offset = request.args.get('offset')
+            if offset == None:
+                offset = 1
+            else:
+                offset = int(offset)
+            # print("offset: " + offset)
+            packages_ref = db.collection('packages')
+            docs = packages_ref.stream()
+            packages = []
+            counter = 1
+            for doc in docs:
+                if((counter > ((offset - 1) * 10)) and (counter <= (offset * 10))):
+                    packages.append(doc.to_dict()['metadata'])
+                counter += 1
 
-        return jsonify(packages)
+            return jsonify(packages)
+        except: return jsonify(code=0, message='Unexpected error retrieving packages'), 'default'
 
     # Create package
     @app.route("/package", methods = ['POST'])
@@ -84,6 +86,7 @@ class PackageList(Resource):
             # Check to see if package already exists
             packages_ref = db.collection('packages')
             docs = packages_ref.stream()
+            package.metadata['ID'] = package.metadata['ID'] + '_' + package.metadata['Version']
             for doc in docs:
                 if doc.to_dict()['metadata']['ID'] == package.metadata['ID']:
                     return 'Package already exists', 403
@@ -95,36 +98,36 @@ class PackageList(Resource):
     # Get package by ID
     @app.route("/package/<packageid>", methods = ['GET'])
     def retrievePackage(packageid):
-        packages_ref = db.collection('packages')
-        docs = packages_ref.stream()
-        for doc in docs:
-            if doc.to_dict()['metadata']['ID'] == packageid:
-                return doc.to_dict(), 200
-        
-        return jsonify(code=-1, message="An error occurred while retrieving package"), 500
+        try:
+            packages_ref = db.collection('packages')
+            docs = packages_ref.stream()
+            for doc in docs:
+                if doc.to_dict()['metadata']['ID'] == packageid:
+                    return doc.to_dict(), 200
+            return jsonify(code=0, message="Package with ID '" + packageid + "' not found"), 'default'
+        except: return jsonify(code=0, message="An error occurred while retrieving package"), 'default'
 
     # Update package
     @app.route("/package/<packageid>", methods = ['PUT'])
     def updatePackage(packageid):
-        args = parser.parse_args()
-        package = Package(metadata=args['metadata'], data=args['data'])
-        packages_ref = db.collection('packages')
-        docs = packages_ref.stream()
-        # db.collection('packages').document().update({"data": args['data'], "metadata": args['metadata']})
-        for doc in docs:
-            if doc.to_dict()['metadata']['ID'] == packageid:
-                if (doc.to_dict()['metadata']['Name'] == args['metadata']['Name'] and doc.to_dict()['metadata']['Version'] != args['metadata']['Version']):
-                    docID = doc.to_dict()['metadata']['ID']
-                    # doc.to_dict()['data'] = args['data']
-                    # doc.to_dict()['metadata'].update(args['metadata'])
-                    # print(args['metadata'])
-                    db.collection('packages').document(docID).update({"data": args['data'], "metadata": args['metadata']})
-                    return args['metadata'], 200
-                else:
-                    print('No updates to make')
-                    return 'No updates to make', 400
-        print('Could not find ' + packageid)
-        return 'Could not find ' + packageid, 400
+        try:
+            args = parser.parse_args()
+            package = Package(metadata=args['metadata'], data=args['data'])
+            packages_ref = db.collection('packages')
+            docs = packages_ref.stream()
+            # db.collection('packages').document().update({"data": args['data'], "metadata": args['metadata']})
+            for doc in docs:
+                if doc.to_dict()['metadata']['ID'] == packageid:
+                    if (doc.to_dict()['metadata']['Name'] == args['metadata']['Name'] and doc.to_dict()['metadata']['Version'] == args['metadata']['Version']):
+                        docID = doc.to_dict()['metadata']['ID']
+                        # doc.to_dict()['data'] = args['data']
+                        # doc.to_dict()['metadata'].update(args['metadata'])
+                        # print(args['metadata'])
+                        db.collection('packages').document(docID).update({"data": args['data'], "metadata": args['metadata']})
+                        return args['metadata'], 200
+            print('Could not find requested version of ' + packageid)
+            return 'Could not find requested version of ' + packageid, 400
+        except: return 'Malformed request', 400
     
     # Request audit
     @app.route("/package/<packageid>/audit", methods = ['GET'])
@@ -137,49 +140,69 @@ class PackageList(Resource):
                     utilities.strToZip(doc.to_dict()['data']['Content'], 'tmp/' + packageid + '.zip')
                     output = utilities.auditPackage('tmp/' + packageid + '.zip')
                     return output[0], 200
-        except: return jsonify(code=-1, message="An error occurred while retrieving package"), 500
+        except: return jsonify(code=0, message="An error occurred while retrieving package"), 500
 
     # Delete package by ID
     @app.route("/package/<packageid>", methods = ['DELETE'])
     def deletePackage(packageid):
-        packages_ref = db.collection('packages')
-        docs = packages_ref.stream()
-        for doc in docs:
-            if doc.to_dict()['metadata']['ID'] == packageid:
-                docID = doc.to_dict()['metadata']['ID']
-                db.collection('packages').document(docID).delete()
-                return '', 200
-        return '', 400
+        try:
+            packages_ref = db.collection('packages')
+            docs = packages_ref.stream()
+            for doc in docs:
+                if doc.to_dict()['metadata']['ID'] == packageid:
+                    docID = doc.to_dict()['metadata']['ID']
+                    db.collection('packages').document(docID).delete()
+                    return '', 200
+            return '', 400
+        except: return '', 400
+    
+    # Delete all versions of package
+    @app.route("/package/byName/<packageName>", methods = ['DELETE'])
+    def deletePackageByName(packageName):
+        try:
+            packages_ref = db.collection('packages')
+            docs = packages_ref.stream()
+            for doc in docs:
+                if doc.to_dict()['metadata']['Name'] == packageName:
+                    docID = doc.to_dict()['metadata']['ID']
+                    db.collection('packages').document(docID).delete()
+                    return '', 200
+            return '', 400
+        except: return '', 400
 
     # Reset registry
     @app.route("/reset", methods = ['DELETE'])
     def resetRegistry():
-        packages_ref = db.collection('packages')
-        docs = packages_ref.stream()
-        for doc in docs:
-            docID = doc.to_dict()['metadata']['ID']
-            db.collection('packages').document(docID).delete()
+        try:
+            packages_ref = db.collection('packages')
+            docs = packages_ref.stream()
+            for doc in docs:
+                docID = doc.to_dict()['metadata']['ID']
+                db.collection('packages').document(docID).delete()
+                print("deleted " + docID)
             return '', 200
-        return '', 401
+        except: return '', 401
 
     # Rate package by ID
     @app.route("/package/<packageid>/rate", methods = ['GET'])
     def ratePackage(packageid):
-        packages_ref = db.collection('packages')
-        docs = packages_ref.stream()
-        for doc in docs:
-            if doc.to_dict()['metadata']['ID'] == packageid:
-                docID = doc.to_dict()['metadata']['ID']
-                # if no score for one of the metrics:
-                #     return '', 500
-                # else:
-                URL = doc.to_dict()['data']['URL']
-                scores = rate(URL)
-                # print(scores)
-                return jsonify(RampUp = scores[1], Correctness = scores[2], BusFactor = scores[3], ResponsiveMaintainer = scores[4], LicenseScore = scores[5], GoodPinningPractice = scores[6]), 200
-                # return '', 200
-        print('Could not find ' + packageid)
-        return '', 400
+        try:
+            packages_ref = db.collection('packages')
+            docs = packages_ref.stream()
+            for doc in docs:
+                if doc.to_dict()['metadata']['ID'] == packageid:
+                    docID = doc.to_dict()['metadata']['ID']
+                    # if no score for one of the metrics:
+                    #     return '', 500
+                    # else:
+                    URL = doc.to_dict()['data']['URL']
+                    scores = rate(URL)
+                    # print(scores)
+                    return jsonify(RampUp = scores[1], Correctness = scores[2], BusFactor = scores[3], ResponsiveMaintainer = scores[4], LicenseScore = scores[5], GoodPinningPractice = scores[6]), 200
+                    # return '', 200
+            print('Could not find ' + packageid)
+            return '', 400
+        except: return 'Error calculating metrics', 500
 
     # package ingestion
     @app.route("/package", methods = ['POST'])
