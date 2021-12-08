@@ -24,6 +24,8 @@ import project1 as p1
 import os
 import sys
 import subprocess
+import datetime
+import jwt
 
 
 class Package(object):
@@ -48,6 +50,8 @@ db = firestore.Client()
 api = Api(app)
 # JwtRoutes(app)
 # jwt_routes = JwtRoutes()
+
+app.config['SECRET_KEY'] = '192b9bdd22ab9ed4d12e23aadvnal 457ssafcb9a393ec15f71bbf5dc987d'
 
 # class UserModel(db.Model):
 #     user_id = db.Column(db.Integer, primary_key=True)
@@ -137,9 +141,6 @@ class PackageList(Resource):
                 if doc.to_dict()['metadata']['ID'] == packageid:
                     if (doc.to_dict()['metadata']['Name'] == args['metadata']['Name'] and doc.to_dict()['metadata']['Version'] == args['metadata']['Version']):
                         docID = doc.to_dict()['metadata']['ID']
-                        # doc.to_dict()['data'] = args['data']
-                        # doc.to_dict()['metadata'].update(args['metadata'])
-                        # print(args['metadata'])
                         db.collection('packages').document(docID).update({"data": args['data'], "metadata": args['metadata']})
                         return args['metadata'], 200
             print('Could not find requested version of ' + packageid)
@@ -243,6 +244,19 @@ class PackageList(Resource):
                 return package.to_dict()['metadata'], 201
         except: return 'Malformed request', 400
 
+    @app.route('/authenticate')
+    def create_token():
+        try:
+            args = parser.parse_args()
+            # auth = request.authorization
+
+            if args['Secret']['password'] == 'correcthorsebatterystaple123(!__+@**(A':
+                token = jwt.encode({'user' : args['User']['name'], 'exp' : datetime.datetime.utcnow() + datetime.timedelta(hours=10)}, app.config['SECRET_KEY'])
+                return token.decode('UTF-8')
+
+            return 'no such user or invalid password', 401
+        except: return 'This system does not support authentication', 501
+
     
     # Register and Login user
     # @app.route("/auth/user", methods=["POST"])
@@ -274,7 +288,7 @@ parser = reqparse.RequestParser()
 parser.add_argument('metadata', type=dict)
 parser.add_argument('data', type=dict)
 
-api.add_resource(PackageList, '/packages', '/package', '/package/<packageid>', '/reset', '/package/<packageid>/rate') # '/auth/user')
+api.add_resource(PackageList, '/packages', '/package', '/package/<packageid>', '/reset', '/package/<packageid>/rate', '/authenticate') # '/auth/user')
 
 @app.route('/')
 def hello():
