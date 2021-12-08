@@ -102,15 +102,15 @@ class PackageList(Resource):
     # Get package by ID
     @app.route("/package/<packageid>", methods = ['GET'])
     def retrievePackage(packageid):
-        try:
-            packages_ref = db.collection('packages')
-            docs = packages_ref.stream()
-            for doc in docs:
-                if doc.to_dict()['metadata']['ID'] == packageid:
-                    return doc.to_dict(), 200
-            # return jsonify(code=0, message="Package with ID '" + packageid + "' not found"), 'default'
-            return "Package not found", 'default'
-        except: return jsonify(code=0, message="An error occurred while retrieving package"), 'default'
+        # try:
+        packages_ref = db.collection('packages')
+        docs = packages_ref.stream()
+        for doc in docs:
+            if doc.to_dict()['metadata']['ID'] == packageid:
+                return doc.to_dict(), 200
+        # return jsonify(code=0, message="Package with ID '" + packageid + "' not found"), 'default'
+        return "Package not found", 'default'
+        # except: return jsonify(code=0, message="An error occurred while retrieving package"), 'default'
     
     # Get package by name
     @app.route("/package/byName/<name>", methods = ['GET'])
