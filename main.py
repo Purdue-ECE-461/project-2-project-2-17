@@ -138,11 +138,12 @@ class PackageList(Resource):
             docs = packages_ref.stream()
             # db.collection('packages').document().update({"data": args['data'], "metadata": args['metadata']})
             for doc in docs:
+                print(doc.to_dict()['metadata']['ID'])
+                print(packageid)
                 if doc.to_dict()['metadata']['ID'] == packageid:
-                    if (doc.to_dict()['metadata']['Name'] == args['metadata']['Name'] and doc.to_dict()['metadata']['Version'] == args['metadata']['Version']):
-                        docID = doc.to_dict()['metadata']['ID']
-                        db.collection('packages').document(docID).update({"data": args['data'], "metadata": args['metadata']})
-                        return args['metadata'], 200
+                    docID = doc.to_dict()['metadata']['ID']
+                    db.collection('packages').document(docID).update({"data": args['data'], "metadata": args['metadata']})
+                    return args, 200
             print('Could not find requested version of ' + packageid)
             return 'Could not find requested version of ' + packageid, 400
         except: return 'Malformed request', 400
