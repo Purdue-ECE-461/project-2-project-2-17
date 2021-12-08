@@ -80,7 +80,7 @@ class PackageList(Resource):
             return jsonify(packages)
         except: return jsonify(code=0, message='Unexpected error retrieving packages')
 
-    # Create package
+    # Create/Ingest package
     @app.route("/package", methods = ['POST'])
     def createPackage():
         try:
@@ -97,6 +97,12 @@ class PackageList(Resource):
             if ("Content" in package.to_dict()['data']):
                 db.collection('packages').document(package.metadata['ID']).set(package.to_dict())
                 return package.to_dict()['metadata'], 201
+            else:
+                URL = package.data['URL']
+                if isIngestible(URL):
+                    db.collection('packages').document(package.metadata['ID']).set(package.to_dict())
+                    return package.to_dict()['metadata'], 201
+            return 'URL not ingestible', 400
         except: return 'Malformed request', 400
 
     # Get package by ID
@@ -228,24 +234,6 @@ class PackageList(Resource):
             return '', 400
         except: return 'Error calculating metrics', 500
 
-    # package ingestion
-    @app.route("/package", methods = ['POST'])
-    def ingestPackage():
-        try:
-            args = parser.parse_args()
-            package = Package(metadata=args['metadata'], data=args['data'])
-            packages_ref = db.collection('packages')
-            docs = packages_ref.stream()
-            for doc in docs:
-                # if (doc.to_dict()['metadata']['ID'] == package.metadata['ID'] and doc.to_dict()['metadata']['Name'] == package.metadata['Name'] and doc.to_dict()['metadata']['Version'] == package.metadata['Version']): 
-                if doc.to_dict()['metadata']['ID'] == package.metadata['ID']:
-                    return 'Package already exists', 403      
-            URL = package.data['URL']
-            if isIngestible(URL):
-                db.collection('packages').document(package.metadata['ID']).set(package.to_dict())
-                return package.to_dict()['metadata'], 201
-        except: return 'Malformed request', 400
-
     @app.route('/authenticate', methods = ['PUT'])
     def create_token():
         try:
@@ -301,9 +289,11 @@ def hello():
 def isIngestible(URL):
     scores = rate(URL)
     print(scores)
-    if (all(i >= 0.5 for i in scores)):
+    if (all(float(i) >= 0.5 for i in scores)):
+        print("Ingestible")
         return True
     else:
+        print("Not Ingestible")
         return False
 
 
