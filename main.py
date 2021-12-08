@@ -165,7 +165,7 @@ class PackageList(Resource):
                     utilities.strToZip(doc.to_dict()['data']['Content'], 'tmp/' + packageid + '.zip')
                     output = utilities.auditPackage('tmp/' + packageid + '.zip')
                     return output[0], 200
-            return jsonify(code=0, message="Package with ID '" + packageid + "' not found")
+            return jsonify(code=0, message="Package with ID '" + packageid + "' not found"), 400
         except: return jsonify(code=0, message="An error occurred while retrieving package"), 500
 
     # Delete package by ID
