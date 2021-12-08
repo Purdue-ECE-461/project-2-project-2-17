@@ -78,7 +78,7 @@ class PackageList(Resource):
                 counter += 1
 
             return jsonify(packages)
-        except: return jsonify(code=0, message='Unexpected error retrieving packages'), 'default'
+        except: return jsonify(code=0, message='Unexpected error retrieving packages')
 
     # Create package
     @app.route("/package", methods = ['POST'])
@@ -102,15 +102,14 @@ class PackageList(Resource):
     # Get package by ID
     @app.route("/package/<packageid>", methods = ['GET'])
     def retrievePackage(packageid):
-        # try:
-        packages_ref = db.collection('packages')
-        docs = packages_ref.stream()
-        for doc in docs:
-            if doc.to_dict()['metadata']['ID'] == packageid:
-                return doc.to_dict(), 200
-        return jsonify(code=0, message="Package with ID '" + packageid + "' not found"), 'default'
-        # return 'Package not found', 400
-        # except: return jsonify(code=0, message="An error occurred while retrieving package"), 'default'
+        try:
+            packages_ref = db.collection('packages')
+            docs = packages_ref.stream()
+            for doc in docs:
+                if doc.to_dict()['metadata']['ID'] == packageid:
+                    return doc.to_dict(), 200
+            return jsonify(code=0, message="Package with ID '" + packageid + "' not found")
+        except: return jsonify(code=0, message="An error occurred while retrieving package")
     
     # Get package by name
     @app.route("/package/byName/<name>", methods = ['GET'])
@@ -126,8 +125,8 @@ class PackageList(Resource):
                     packages.append(doc.to_dict()['metadata'])
             if foundFlag:
                 return jsonify(packages), 200
-            return jsonify(code=0, message="Package with name '" + name + "' not found"), 'default'
-        except: return jsonify(code=0, message="An error occurred while retrieving package"), 'default'
+            return jsonify(code=0, message="Package with name '" + name + "' not found")
+        except: return jsonify(code=0, message="An error occurred while retrieving package")
 
     # Update package
     @app.route("/package/<packageid>", methods = ['PUT'])
