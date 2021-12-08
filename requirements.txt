@@ -9,3 +9,5 @@ PyGithub
 GitPython
 python-dotenv
 google-cloud-secret-manager
+jwt
+datetime

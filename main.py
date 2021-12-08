@@ -244,7 +244,7 @@ class PackageList(Resource):
                 return package.to_dict()['metadata'], 201
         except: return 'Malformed request', 400
 
-    @app.route('/authenticate')
+    @app.route('/authenticate', methods = ['PUT'])
     def create_token():
         try:
             args = parser.parse_args()
@@ -252,7 +252,7 @@ class PackageList(Resource):
 
             if args['Secret']['password'] == 'correcthorsebatterystaple123(!__+@**(A':
                 token = jwt.encode({'user' : args['User']['name'], 'exp' : datetime.datetime.utcnow() + datetime.timedelta(hours=10)}, app.config['SECRET_KEY'])
-                return token.decode('UTF-8')
+                return token.decode('UTF-8'), 200
 
             return 'no such user or invalid password', 401
         except: return 'This system does not support authentication', 501
