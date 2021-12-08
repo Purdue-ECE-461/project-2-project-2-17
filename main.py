@@ -14,7 +14,7 @@
 
 # [START gae_python38_app]
 # [START gae_python3_app]
-from flask import Flask, jsonify, g
+from flask import Flask, jsonify, json, g
 from flask_restful import Resource, Api, reqparse, request
 from flask_jwt_router import JwtRoutes
 from google.cloud import firestore
@@ -108,8 +108,8 @@ class PackageList(Resource):
         for doc in docs:
             if doc.to_dict()['metadata']['ID'] == packageid:
                 return doc.to_dict(), 200
-        # return jsonify(code=0, message="Package with ID '" + packageid + "' not found"), 'default'
-        return 'Package not found', 400
+        return jsonify(code=0, message="Package with ID '" + packageid + "' not found")
+        # return 'Package not found', 400
         # except: return jsonify(code=0, message="An error occurred while retrieving package"), 'default'
     
     # Get package by name
