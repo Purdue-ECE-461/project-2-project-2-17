@@ -25,7 +25,7 @@ import os
 import sys
 import subprocess
 import datetime
-# import jwt
+import jwt
 
 
 class Package(object):
