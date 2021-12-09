@@ -51,7 +51,7 @@ api = Api(app)
 # JwtRoutes(app)
 # jwt_routes = JwtRoutes()
 
-app.config['SECRET_KEY'] = '192b9bdd22ab9ed4d12e23aadvnal 457ssafcb9a393ec15f71bbf5dc987d'
+app.config['SECRET_KEY'] = 'this is my secret token'
 
 # class UserModel(db.Model):
 #     user_id = db.Column(db.Integer, primary_key=True)
