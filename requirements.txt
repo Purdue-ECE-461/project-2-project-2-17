@@ -1,0 +1,12 @@
+Flask==2.0.1
+Flask-RESTful
+google-cloud-firestore
+gunicorn
+Werkzeug
+npm
+flask-jwt-router
+PyGithub
+GitPython
+python-dotenv
+google-cloud-secret-manager
+datetime

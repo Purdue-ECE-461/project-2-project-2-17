@@ -1,0 +1,25 @@
+#! /usr/bin/bash
+
+python3 -m venv .
+source ./bin/activate
+
+echo "$1"
+
+if [ "$1" = "install" ];
+then
+  echo "Doing installs"
+  chmod 744 ./installFile.sh
+  sh installFile.sh
+  exit 0
+elif [ "$1" = "test" ]
+then
+  echo "Testing..."
+  python3 Run.py "$1"
+else
+  echo "Running repo scoring with file "$1""
+  python3 Run.py "$1"
+fi
+
+deactivate
+
+

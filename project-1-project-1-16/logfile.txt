@@ -1,0 +1,128 @@
+
+
+
+
+Informational Message: Logger started
+DEBUG Message: Logger started on line 15 in Run.py
+Informational Message: File parsing beginning
+DEBUG Message: File parser object created
+Informational Message: Connection opened to Github
+DEBUG Message: 
+Informational Message: RepoData objects created in APIService.py
+DEBUG Message: 
+Informational Message: Data obtained from API.
+DEBUG Message: 
+Informational Message: ScoreCalculator created.
+DEBUG Message: Score calculator created.
+Informational Message: Repo does not have a license.
+DEBUG Message: 
+Informational Message: Repo has a ReadMe.
+DEBUG Message: 
+Informational Message: Repo has a correctness score of 0.20
+DEBUG Message: Repo contains 493 stars
+Informational Message: Repo has a busFactor score of 0.11
+DEBUG Message: Repo contains 38 users and it has been 9 months since the last change to the repo
+Informational Message: Repo has a responsiveness score of 0.37
+DEBUG Message: Repo contains 45 contributors and 281 forks
+Informational Message: Net score calculated for https://github.com/cloudinary/cloudinary_npm
+DEBUG Message: The calculated net score is 0.00
+Informational Message: Repo has a compatible license
+DEBUG Message: 
+Informational Message: Repo has a ReadMe.
+DEBUG Message: 
+Informational Message: Repo has a correctness score of 1.00
+DEBUG Message: Repo contains 54621 stars
+Informational Message: Repo has a busFactor score of 0.51
+DEBUG Message: Repo contains 1775 users and it has been 11 months since the last change to the repo
+Informational Message: Repo has a responsiveness score of 1.00
+DEBUG Message: Repo contains 245 contributors and 9233 forks
+Informational Message: Net score calculated for https://www.npmjs.com/package/express
+DEBUG Message: The calculated net score is 0.95
+Informational Message: Repo has a compatible license
+DEBUG Message: 
+Informational Message: Repo has a ReadMe.
+DEBUG Message: 
+Informational Message: Repo has a correctness score of 0.50
+DEBUG Message: Repo contains 1337 stars
+Informational Message: Repo has a busFactor score of 0.35
+DEBUG Message: Repo contains 62 users and it has been 4 months since the last change to the repo
+Informational Message: Repo has a responsiveness score of 0.22
+DEBUG Message: Repo contains 27 contributors and 175 forks
+Informational Message: Net score calculated for https://github.com/nullivex/nodist
+DEBUG Message: The calculated net score is 0.40
+Informational Message: Repo has an incompatible license.
+DEBUG Message: The license ID is NOASSERTION
+Informational Message: Repo has a ReadMe.
+DEBUG Message: 
+Informational Message: Repo has a correctness score of 1.00
+DEBUG Message: Repo contains 50953 stars
+Informational Message: Repo has a busFactor score of 0.46
+DEBUG Message: Repo contains 883 users and it has been 11 months since the last change to the repo
+Informational Message: Repo has a responsiveness score of 1.00
+DEBUG Message: Repo contains 289 contributors and 6020 forks
+Informational Message: Net score calculated for https://github.com/lodash/lodash
+DEBUG Message: The calculated net score is 0.00
+Informational Message: Repo has a compatible license
+DEBUG Message: 
+Informational Message: Repo has a ReadMe.
+DEBUG Message: 
+Informational Message: Repo has a correctness score of 1.00
+DEBUG Message: Repo contains 13842 stars
+Informational Message: Repo has a busFactor score of 0.37
+DEBUG Message: Repo contains 301 users and it has been 6 months since the last change to the repo
+Informational Message: Repo has a responsiveness score of 1.00
+DEBUG Message: Repo contains 181 contributors and 1212 forks
+Informational Message: Net score calculated for https://www.npmjs.com/package/browserify
+DEBUG Message: The calculated net score is 0.94
+Informational Message: Repo has a compatible license
+DEBUG Message: 
+Informational Message: Repo has a ReadMe.
+DEBUG Message: 
+Informational Message: Repo has a correctness score of 1.00
+DEBUG Message: Repo contains 55455 stars
+Informational Message: Repo has a busFactor score of 0.51
+DEBUG Message: Repo contains 3325 users and it has been 11 months since the last change to the repo
+Informational Message: Repo has a responsiveness score of 1.00
+DEBUG Message: Repo contains 284 contributors and 20121 forks
+Informational Message: Net score calculated for https://www.npmjs.com/package/jquery
+DEBUG Message: The calculated net score is 0.95
+Informational Message: Repo does not have a license.
+DEBUG Message: 
+Informational Message: Repo does not have a ReadMe
+DEBUG Message: 
+Informational Message: Repo has a correctness score of 0.00
+DEBUG Message: Repo contains 0 stars
+Informational Message: Repo has a busFactor score of 0.49
+DEBUG Message: Repo contains 0 users and it has been 0 months since the last change to the repo
+Informational Message: Repo has a responsiveness score of 0.01
+DEBUG Message: Repo contains 1 contributors and 0 forks
+Informational Message: Net score calculated for https://github.com/RyanHonwad/hello-world
+DEBUG Message: The calculated net score is 0.00
+Informational Message: Scores calculated.
+DEBUG Message: 
+Informational Message: Scores sorted.
+DEBUG Message: 
+
+
+Informational Message: Test suite initialized.
+DEBUG Message: Test suite initialized.
+Informational Message: Test cases started.
+DEBUG Message: 
+Informational Message: Score calculator tested.
+DEBUG Message: 
+Informational Message: ApiService tested.
+DEBUG Message: 
+Informational Message: FileParser tested.
+DEBUG Message: 
+Informational Message: Url object tested.
+DEBUG Message: 
+
+
+
+
+
+
+Informational Message: Logger tested.
+DEBUG Message: 
+Informational Message: Finished testing.
+DEBUG Message: 23 test cases tested with 96.94% line coverage achieved.
